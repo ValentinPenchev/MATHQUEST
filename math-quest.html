@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 MATH QUEST - Умножение на десетични дроби</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #667eea; }
+            to { text-shadow: 0 0 20px #fff, 0 0 30px #764ba2, 0 0 40px #764ba2; }
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .leaderboard {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .leaderboard h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .leaderboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .team-score {
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .team-score:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .team-score h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .team-score .score {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .team-score .progress {
+            margin-top: 10px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .teams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .team-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 3px solid;
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .team-1 { border-color: #ff6b6b; }
+        .team-2 { border-color: #4ecdc4; }
+        .team-3 { border-color: #95e1d3; }
+        .team-4 { border-color: #ffe66d; }
+        .team-5 { border-color: #c77dff; }
+        .team-6 { border-color: #ff9f43; }
+
+        .team-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .team-header h2 {
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .team-header .team-points {
+            font-size: 2em;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .mission {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border-left: 4px solid rgba(255,255,255,0.5);
+        }
+
+        .mission.completed {
+            background: rgba(76, 175, 80, 0.3);
+            border-left-color: #4CAF50;
+        }
+
+        .mission.incorrect {
+            background: rgba(244, 67, 54, 0.3);
+            border-left-color: #f44336;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .mission-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .mission-number {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .mission-status {
+            font-size: 1.5em;
+        }
+
+        .mission-question {
+            font-size: 1.3em;
+            margin: 10px 0;
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .mission-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .mission-input input {
+            flex: 1;
+            padding: 12px;
+            font-size: 1.1em;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.9);
+            transition: all 0.3s ease;
+        }
+
+        .mission-input input:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+
+        .mission-input button {
+            padding: 12px 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mission-input button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .mission-input button:active {
+            transform: scale(0.95);
+        }
+
+        .mission-input button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 1000;
+            display: none;
+            border: 3px solid #FFD700;
+        }
+
+        .celebration.show {
+            display: block;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .celebration h2 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #FFD700;
+        }
+
+        .celebration p {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.7);
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 1.5em;
+            font-weight: bold;
+            border: 2px solid #FFD700;
+            z-index: 100;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .controls button {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            margin: 0 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+        }
+
+        .controls button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .teams-grid { grid-template-columns: 1fr; }
+            .leaderboard-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 MATH QUEST</h1>
+        <p class="subtitle">Умножение на десетични дроби - Интерактивно състезание</p>
+
+        <div class="timer" id="timer">⏱️ 00:00</div>
+
+        <div class="controls">
+            <button class="start-btn" onclick="startGame()">🚀 СТАРТ ИГРА</button>
+            <button class="reset-btn" onclick="resetGame()">🔄 РЕСТАРТ</button>
+        </div>
+
+        <div class="leaderboard">
+            <h2>🏆 КЛАСАЦИЯ</h2>
+            <div class="leaderboard-grid" id="leaderboard"></div>
+        </div>
+
+        <div class="teams-grid" id="teamsGrid"></div>
+    </div>
+
+    <div class="celebration" id="celebration">
+        <h2>🎉 ПОЗДРАВЛЕНИЯ! 🎉</h2>
+        <p id="celebrationText"></p>
+    </div>
+
+    <script>
+        // Данни за мисиите на всеки екип - формат като на картинката
+        const teamsData = {
+            1: {
+                name: "RED HACKERS",
+                color: "#ff6b6b",
+                missions: [
+                    { question: "3.7 × 3.2", answer: 11.84, letter: "М" },
+                    { question: "7.4 × 0.6", answer: 4.44, letter: "А" },
+                    { question: "8.9 × 2.3", answer: 20.47, letter: "Т" },
+                    { question: "21.5 × 0.72", answer: 15.48, letter: "Е" },
+                    { question: "5.7 × 1.25", answer: 7.125, letter: "М" },
+                    { question: "8.13 × 4.32", answer: 35.1216, letter: "А" },
+                    { question: "0.16 × 0.01", answer: 0.0016, letter: "Т" },
+                    { question: "42.23 × 0.07", answer: 2.9561, letter: "И" }
+                ]
+            },
+            2: {
+                name: "BLUE CODERS",
+                color: "#4ecdc4",
+                missions: [
+                    { question: "2.8 × 1.5", answer: 4.2, letter: "К" },
+                    { question: "6.3 × 0.4", answer: 2.52, letter: "О" },
+                    { question: "9.2 × 3.1", answer: 28.52, letter: "М" },
+                    { question: "12.4 × 0.05", answer: 0.62, letter: "П" },
+                    { question: "4.15 × 2.2", answer: 9.13, letter: "Ю" },
+                    { question: "7.08 × 1.25", answer: 8.85, letter: "Т" },
+                    { question: "0.24 × 0.03", answer: 0.0072, letter: "Ъ" },
+                    { question: "31.5 × 0.08", answer: 2.52, letter: "Р" }
+                ]
+            },
+            3: {
+                name: "GREEN BYTES",
+                color: "#95e1d3",
+                missions: [
+                    { question: "5.6 × 2.3", answer: 12.88, letter: "А" },
+                    { question: "8.1 × 0.7", answer: 5.67, letter: "Л" },
+                    { question: "3.9 × 4.2", answer: 16.38, letter: "Г" },
+                    { question: "18.7 × 0.15", answer: 2.805, letter: "О" },
+                    { question: "6.25 × 1.6", answer: 10, letter: "Р" },
+                    { question: "9.04 × 2.5", answer: 22.6, letter: "И" },
+                    { question: "0.35 × 0.02", answer: 0.007, letter: "Т" },
+                    { question: "52.8 × 0.06", answer: 3.168, letter: "Ъ" }
+                ]
+            },
+            4: {
+                name: "YELLOW PIXELS",
+                color: "#ffe66d",
+                missions: [
+                    { question: "4.3 × 1.8", answer: 7.74, letter: "Р" },
+                    { question: "7.2 × 0.9", answer: 6.48, letter: "Е" },
+                    { question: "5.5 × 3.4", answer: 18.7, letter: "Ш" },
+                    { question: "23.6 × 0.25", answer: 5.9, letter: "Е" },
+                    { question: "8.14 × 1.5", answer: 12.21, letter: "Н" },
+                    { question: "6.09 × 3.2", answer: 19.488, letter: "И" },
+                    { question: "0.48 × 0.05", answer: 0.024, letter: "Е" },
+                    { question: "64.2 × 0.04", answer: 2.568, letter: "!" }
+                ]
+            },
+            5: {
+                name: "PURPLE LOGIC",
+                color: "#c77dff",
+                missions: [
+                    { question: "3.5 × 2.4", answer: 8.4, letter: "У" },
+                    { question: "6.8 × 0.8", answer: 5.44, letter: "С" },
+                    { question: "4.7 × 5.1", answer: 23.97, letter: "П" },
+                    { question: "15.3 × 0.35", answer: 5.355, letter: "Е" },
+                    { question: "7.26 × 1.8", answer: 13.068, letter: "Х" },
+                    { question: "8.15 × 2.6", answer: 21.19, letter: "!" },
+                    { question: "0.56 × 0.04", answer: 0.0224, letter: "!" },
+                    { question: "71.4 × 0.09", answer: 6.426, letter: "!" }
+                ]
+            },
+            6: {
+                name: "ORANGE DATA",
+                color: "#ff9f43",
+                missions: [
+                    { question: "2.9 × 3.6", answer: 10.44, letter: "Б" },
+                    { question: "5.4 × 0.5", answer: 2.7, letter: "Р" },
+                    { question: "7.8 × 4.3", answer: 33.54, letter: "А" },
+                    { question: "19.2 × 0.45", answer: 8.64, letter: "В" },
+                    { question: "6.37 × 2.1", answer: 13.377, letter: "О" },
+                    { question: "9.12 × 1.75", answer: 15.96, letter: "!" },
+                    { question: "0.67 × 0.06", answer: 0.0402, letter: "!" },
+                    { question: "83.5 × 0.03", answer: 2.505, letter: "!" }
+                ]
+            }
+        };
+
+        // Състояние на играта
+        let gameState = {};
+        let timerInterval;
+        let startTime;
+
+        // Инициализация
+        function initGame() {
+            for (let teamId in teamsData) {
+                gameState[teamId] = {
+                    points: 0,
+                    completed: 0,
+                    missions: teamsData[teamId].missions.map(() => ({ 
+                        status: 'pending', 
+                        attempts: 0 
+                    }))
+                };
+            }
+            renderTeams();
+            updateLeaderboard();
+        }
+
+        // Рендиране на екипите
+        function renderTeams() {
+            const grid = document.getElementById('teamsGrid');
+            grid.innerHTML = '';
+
+            for (let teamId in teamsData) {
+                const team = teamsData[teamId];
+                const state = gameState[teamId];
+                
+                const teamCard = document.createElement('div');
+                teamCard.className = `team-card team-${teamId}`;
+                teamCard.innerHTML = `
+                    <div class="team-header">
+                        <h2>🔥 ${team.name}</h2>
+                        <div class="team-points">${state.points} точки</div>
+                        <div class="progress">${state.completed}/8 мисии</div>
+                    </div>
+                    <div id="missions-${teamId}"></div>
+                `;
+                grid.appendChild(teamCard);
+
+                renderMissions(teamId);
+            }
+        }
+
+        // Рендиране на мисиите за екип
+        function renderMissions(teamId) {
+            const container = document.getElementById(`missions-${teamId}`);
+            const team = teamsData[teamId];
+            const state = gameState[teamId];
+            
+            container.innerHTML = '';
+            
+            team.missions.forEach((mission, index) => {
+                const missionState = state.missions[index];
+                const missionDiv = document.createElement('div');
+                missionDiv.className = `mission ${missionState.status}`;
+                
+                let statusIcon = '⏳';
+                if (missionState.status === 'completed') statusIcon = '✅';
+                if (missionState.status === 'incorrect') statusIcon = '❌';
+                
+                missionDiv.innerHTML = `
+                    <div class="mission-header">
+                        <span class="mission-number">Мисия ${index + 1}</span>
+                        <span class="mission-status">${statusIcon}</span>
+                    </div>
+                    <div class="mission-question">${mission.question} = ?</div>
+                    <div class="mission-input">
+                        <input 
+                            type="number" 
+                            step="0.1" 
+                            id="input-${teamId}-${index}"
+                            placeholder="Въведи отговор"
+                            ${missionState.status === 'completed' ? 'disabled' : ''}
+                            onkeypress="if(event.key==='Enter') checkAnswer(${teamId}, ${index})"
+                        >
+                        <button 
+                            onclick="checkAnswer(${teamId}, ${index})"
+                            ${missionState.status === 'completed' ? 'disabled' : ''}
+                        >
+                            ${missionState.status === 'completed' ? '✓ Решена' : 'Проверка'}
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(missionDiv);
+            });
+        }
+
+        // Проверка на отговор
+        function checkAnswer(teamId, missionIndex) {
+            const input = document.getElementById(`input-${teamId}-${missionIndex}`);
+            const userAnswer = parseFloat(input.value);
+            const correctAnswer = teamsData[teamId].missions[missionIndex].answer;
+            const state = gameState[teamId];
+            
+            if (isNaN(userAnswer)) {
+                alert('Моля, въведи числов отговор!');
+                return;
+            }
+            
+            // Проверка с толеранс за десетични числа
+            // За по-голяма точност при десетични дроби
+            const tolerance = correctAnswer < 1 ? 0.0001 : 0.01;
+            const isCorrect = Math.abs(userAnswer - correctAnswer) < tolerance;
+            
+            if (isCorrect) {
+                state.missions[missionIndex].status = 'completed';
+                state.points += 10;
+                state.completed += 1;
+                
+                // Празнуване при завършване на всички мисии
+                if (state.completed === 8) {
+                    const code = teamsData[teamId].missions.map(m => m.letter).join('');
+                    showCelebration(teamId, code);
+                }
+                
+                playSound('success');
+            } else {
+                state.missions[missionIndex].status = 'incorrect';
+                state.missions[missionIndex].attempts += 1;
+                playSound('error');
+                
+                setTimeout(() => {
+                    state.missions[missionIndex].status = 'pending';
+                    renderMissions(teamId);
+                }, 1000);
+            }
+            
+            renderMissions(teamId);
+            updateLeaderboard();
+        }
+
+        // Обновяване на класацията
+        function updateLeaderboard() {
+            const leaderboard = document.getElementById('leaderboard');
+            const teams = Object.keys(gameState).map(id => ({
+                id,
+                name: teamsData[id].name,
+                points: gameState[id].points,
+                completed: gameState[id].completed
+            }));
+            
+            teams.sort((a, b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                return b.completed - a.completed;
+            });
+            
+            leaderboard.innerHTML = teams.map((team, index) => {
+                let medal = '';
+                if (index === 0) medal = '🥇';
+                if (index === 1) medal = '🥈';
+                if (index === 2) medal = '🥉';
+                
+                return `
+                    <div class="team-score">
+                        <h3>${medal} ${team.name}</h3>
+                        <div class="score">${team.points}</div>
+                        <div class="progress">${team.completed}/8 мисии</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Показване на празнуване
+        function showCelebration(teamId, code) {
+            const celebration = document.getElementById('celebration');
+            const text = document.getElementById('celebrationText');
+            
+            text.innerHTML = `
+                <strong>${teamsData[teamId].name}</strong> завърши всички мисии!<br>
+                🔐 Код: <strong>${code}</strong><br>
+                💰 Точки: <strong>${gameState[teamId].points}</strong>
+            `;
+            
+            celebration.classList.add('show');
+            
+            setTimeout(() => {
+                celebration.classList.remove('show');
+            }, 5000);
+        }
+
+        // Звукови ефекти (симулирани)
+        function playSound(type) {
+            // Можеш да добавиш реални звукови файлове
+            console.log(`🔊 ${type} sound`);
+        }
+
+        // Таймер
+        function startGame() {
+            if (timerInterval) return;
+            
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                document.getElementById('timer').textContent = 
+                    `⏱️ ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function resetGame() {
+            if (confirm('Сигурен ли си, че искаш да рестартираш играта?')) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                document.getElementById('timer').textContent = '⏱️ 00:00';
+                initGame();
+            }
+        }
+
+        // Стартиране при зареждане
+        initGame();
+    </script>
+</body>
+</html>
